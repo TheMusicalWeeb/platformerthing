@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Sunny-land-assets-files/PNG/environment/layers/tileset.png" type="Texture" id=1]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Tileset" type="Sprite" parent="."]
+position = Vector2( 257, 349 )
+texture = ExtResource( 1 )
