@@ -41,18 +41,18 @@ func update_animation(anim):
 			$AnimationPlayer.play("fall")
 	
 func handle_state(player_state,delta):
-	velocity.y += gravity * delta
+	#velocity.y += gravity * delta
 	match(player_state):
 		state.STARTJUMP:
 			velocity.y = jump_speed
 		state.CROUCH:
 			pass
-		state.RUN:
-			velocity = move_and_slide(velocity, Vector2.UP)
-		state.FALL:
-			velocity = move_and_slide(velocity, Vector2.UP)
-		state.JUMP:
-			velocity = move_and_slide(velocity, Vector2.UP)			
+#		state.RUN:
+#			velocity = move_and_slide(velocity, Vector2.UP)
+#		state.FALL:
+#			velocity = move_and_slide(velocity, Vector2.UP)
+#		state.JUMP:
+#			velocity = move_and_slide(velocity, Vector2.UP)			
 
 func get_input(): 
 	var dir= Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -65,12 +65,17 @@ func _physics_process(delta):
 	get_input()
 	if velocity.x == 0:
 		player_state = state.IDLE
+		print("idle")
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		player_state = state.STARTJUMP
+		print("startjump")
 	elif Input.is_action_pressed("crouch") and is_on_floor():
 		player_state = state.CROUCH
+		print("crouch")
 	elif velocity.x != 0:
 		player_state = state.RUN
+		print("run")
+	
 	
 	
 		
@@ -83,8 +88,9 @@ func _physics_process(delta):
 	handle_state(player_state,delta)
 	update_animation(player_state)
 	#set gravity
-#	velocity.y += gravity * delta
-#	velocity = move_and_slide(velocity, Vector2.UP)
+	velocity.y += gravity * delta
+	if player_state != state.CROUCH:
+		velocity = move_and_slide(velocity, Vector2.UP)
 
 
 func _on_DeathZone_area_entered(area):
