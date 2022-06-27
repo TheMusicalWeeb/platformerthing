@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Sunny-land-assets-files/PNG/spritesheets/player-spritesheet.png" type="Texture" id=1]
 [ext_resource path="res://Player.gd" type="Script" id=2]
@@ -367,6 +367,9 @@ extents = Vector2( 10, 8 )
 radius = 7.0
 height = 6.0
 
+[sub_resource type="RectangleShape2D" id=12]
+extents = Vector2( 2, 8.5 )
+
 [node name="Player" type="KinematicBody2D"]
 script = ExtResource( 2 )
 
@@ -405,4 +408,12 @@ visible = false
 position = Vector2( 0, 6 )
 shape = SubResource( 11 )
 
+[node name="LadderChecker" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LadderChecker"]
+position = Vector2( 0, 4.5 )
+shape = SubResource( 12 )
+
 [connection signal="area_entered" from="DeathZone" to="." method="_on_DeathZone_area_entered"]
+[connection signal="area_entered" from="LadderChecker" to="." method="_on_LadderChecker_area_entered"]
+[connection signal="area_exited" from="LadderChecker" to="." method="_on_LadderChecker_area_exited"]

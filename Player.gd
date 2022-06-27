@@ -15,7 +15,7 @@ enum state {IDLE, JUMP, RUN, CROUCH, HURT, CLIMBUP,CLIMBDOWN, FALL, STARTJUMP}
 onready var player_state = state.IDLE
 
 var on_ladder = false
-export (int)  var ladder_speed = 20
+export (int)  var ladder_speed = 80
 
 func _ready():
 	$AnimationPlayer.play("idle")
@@ -51,7 +51,10 @@ func handle_state(player_state,delta):
 		state.CROUCH:
 			pass
 		state.CLIMBUP:
-			velocity.y = ladder_speed
+			translate(Vector2.UP*ladder_speed *delta)
+		
+		state.CLIMBDOWN:
+			translate(Vector2.DOWN*ladder_speed *delta)
 #		state.RUN:
 #			velocity = move_and_slide(velocity, Vector2.UP)
 #		state.FALL:
@@ -68,9 +71,9 @@ func get_input():
 	
 func _physics_process(delta):
 	get_input()
-	if velocity.x == 0 and not on_ladder:
+	if velocity.x == 0 and is_on_floor(): #might cause issues
 		player_state = state.IDLE
-		print("idle")
+		#print("idle")
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		player_state = state.STARTJUMP
 		print("startjump")
@@ -79,13 +82,19 @@ func _physics_process(delta):
 		print("crouch")
 	elif velocity.x != 0:
 		player_state = state.RUN
-		print("run")
+		#print("run")
 	
-	if on_ladder and Input.is_action_pressed("jump"):
+	if on_ladder and Input.is_action_just_pressed("jump") and is_on_floor():
+		print("climbup")
 		player_state = state.CLIMBUP
+		
+	if on_ladder and Input.is_action_just_pressed("crouch") and not is_on_floor():
+		print("climbdown")
+		player_state = state.CLIMBDOWN
 	
 		
 	if not is_on_floor() and not on_ladder:
+		print("in air")
 		if velocity.y < 0:
 			player_state = state.JUMP
 		if velocity.y >= 0: 
@@ -94,7 +103,8 @@ func _physics_process(delta):
 	handle_state(player_state,delta)
 	update_animation(player_state)
 	#set gravity
-	velocity.y += gravity * delta
+	if not on_ladder:
+		velocity.y += gravity * delta
 	if player_state != state.CROUCH:
 		velocity = move_and_slide(velocity, Vector2.UP)
 
@@ -111,8 +121,11 @@ func _on_DeathZone_area_entered(area):
 
 func _on_LadderChecker_area_entered(area):
 	if area.is_in_group("Ladder"):
+		print("onladder")
 		on_ladder = true # Replace with function body.
 
 
 func _on_LadderChecker_area_exited(area):
-	pass # Replace with function body.
+	if area.is_in_group("Ladder"):
+		print("notonladder")
+		on_ladder = false
