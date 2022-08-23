@@ -1,21 +1,17 @@
 extends Node2D
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
 var dir = Vector2(1,0)
 var speed = 100
 
-enum state {FLY, DEAD}
+enum state {RUN, DEAD}
 
 
 func update_animation(): 
 	if dir.x > 0:
-		$Eagle.flip_h = true
+		$Opossum.flip_h = true
 	elif dir.x < 0:
-		$Eagle.flip_h = false
-	$AnimationPlayer.play("fly")
+		$Opossum.flip_h = false
+	$AnimationPlayer.play("run")
 
 # Called when the node enters the scene tree for the first time.
 func _process(delta):
@@ -32,4 +28,9 @@ func _process(delta):
 
 
 func _on_Area2D_area_entered(area):
+	print(area.name)
+	if area.is_in_group("MonsterFlipper"):dir.x = -dir.x
+
+
+func _on_Opossum_area_entered(area):
 	if area.is_in_group("MonsterFlipper"):dir.x = -dir.x

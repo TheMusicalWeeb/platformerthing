@@ -6,7 +6,7 @@ export (int) var gravity = 400
 export (int) var slide_speed = 400
 
 var velocity = Vector2.ZERO
-
+var bounce =false
 export (float) var friction = 10
 export (float) var acceleration = 25
 
@@ -75,42 +75,47 @@ func get_input():
 		velocity.x = move_toward(velocity.x, 0, friction)
 	
 func _physics_process(delta):
+	if bounce:
+		bounce = false
+		handle_state(player_state,delta)
+	
 	get_input()
+	
 	if velocity.x == 0 and is_on_floor(): #might cause issues
 		player_state = state.IDLE
 		#print("idle")
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		player_state = state.STARTJUMP
-		print("startjump")
+
 	elif Input.is_action_pressed("crouch") and is_on_floor():
 		player_state = state.CROUCH
-		print("crouch")
+
 	elif velocity.x != 0:
 		player_state = state.RUN
 		#print("run")
 	
 	if on_ladder and Input.is_action_pressed("climbup"):
-		print("climbup")
+
 		player_state = state.CLIMBUP
 		climbing = true
 		
 	if on_ladder and Input.is_action_pressed("crouch") and not is_on_floor():
-		print("climbdown")
+
 		player_state = state.CLIMBDOWN
 		climbing = true
 	
 	if on_ladder and Input.is_action_just_released("climbup"):
-		print("stopped climbing up")
+	
 		player_state = state.CLIMB
 		climbing = true
 	
 	if on_ladder and Input.is_action_just_released("crouch"):
-		print("stopped climbing down")
+		
 		player_state = state.CLIMB
 		climbing = true	
 	
 	if not is_on_floor() and not on_ladder:
-		print("in air")
+		
 		climbing = false
 		if velocity.y < 0:
 			player_state = state.JUMP
@@ -129,7 +134,21 @@ func _physics_process(delta):
 
 
 func _on_DeathZone_area_entered(area):
+	if area.is_in_group("Killable"):
+		if player_state == state.FALL:
+			area.queue_free()
+			var explosion = load("res://enemydeath.tscn").instance()
+			area.get_parent().add_child(explosion)
+			explosion.global_position = area.global_position
+			player_state = state.STARTJUMP
+			bounce = true
+			
+			return
+			
 	if area.is_in_group("Deadly"):
+		$DeathZone/CollisionShape2D.disabled = true
+		$DeathZone.monitoring=false
+		$LadderChecker/CollisionShape2D.disabled = true
 		var death = load("res://Death.tscn").instance()
 		get_parent().add_child(death)
 		death.global_position = global_position
@@ -137,16 +156,19 @@ func _on_DeathZone_area_entered(area):
 		set_process(false)
 		set_physics_process(false)
 
+	if area.is_in_group("Gems"):
+		area.queue_free()
+		PlayerStats.gem_count -=1
 
 func _on_LadderChecker_area_entered(area):
 	if area.is_in_group("Ladder"):
-		print("onladder")
+
 		on_ladder = true # Replace with function body.
 
 
 func _on_LadderChecker_area_exited(area):
 	if area.is_in_group("Ladder"):
-		print("notonladder")
+
 		on_ladder = false
 
 
