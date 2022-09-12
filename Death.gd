@@ -5,7 +5,7 @@ func _ready():
 	pass
 
 func reset():
-	get_tree().change_scene("res://Level1.tscn")
+	get_tree().reload_current_scene()
 	PlayerStats.lives -=1
 	
 

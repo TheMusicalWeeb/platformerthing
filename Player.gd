@@ -1,5 +1,5 @@
 extends KinematicBody2D
-
+var dead = false
 export (int) var speed = 120
 export (int) var jump_speed = -180
 export (int) var gravity = 400
@@ -85,6 +85,7 @@ func _physics_process(delta):
 		player_state = state.IDLE
 		#print("idle")
 	if Input.is_action_just_pressed("jump") and is_on_floor():
+		SoundPlayer.play_sound_effect("jump")
 		player_state = state.STARTJUMP
 
 	elif Input.is_action_pressed("crouch") and is_on_floor():
@@ -137,6 +138,7 @@ func _on_DeathZone_area_entered(area):
 	if area.is_in_group("Killable"):
 		if player_state == state.FALL:
 			area.queue_free()
+			SoundPlayer.play_sound_effect("enemyhit")
 			var explosion = load("res://enemydeath.tscn").instance()
 			area.get_parent().add_child(explosion)
 			explosion.global_position = area.global_position
@@ -145,18 +147,22 @@ func _on_DeathZone_area_entered(area):
 			
 			return
 			
-	if area.is_in_group("Deadly"):
+	if area.is_in_group("Deadly") and not dead:
+		dead = true
 		$DeathZone/CollisionShape2D.disabled = true
 		$DeathZone.monitoring=false
 		$LadderChecker/CollisionShape2D.disabled = true
+		SoundPlayer.play_sound_effect("hurt")
 		var death = load("res://Death.tscn").instance()
 		get_parent().add_child(death)
 		death.global_position = global_position
 		hide()
 		set_process(false)
 		set_physics_process(false)
+		
 
 	if area.is_in_group("Gems"):
+		SoundPlayer.play_sound_effect("pickup")
 		area.queue_free()
 		PlayerStats.gem_count -=1
 

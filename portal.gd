@@ -32,11 +32,11 @@ func _process(delta):
 
 
 func _on_Portal_body_entered(body):
-	pass
-	body.queue_free()	
-	$AnimationPlayer.play("close")
-	yield($AnimationPlayer,"animation_finished")
-	print("next level")
+	if PlayerStats.gem_count<= 0 and portal_open:
+		body.queue_free()	
+		$AnimationPlayer.play("close")
+		yield($AnimationPlayer,"animation_finished")
+		get_tree().change_scene_to(load("res://Level2.tscn"))
 #	if the player enters the portal
 #		delete the player
 #		play the portal close animation
