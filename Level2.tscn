@@ -19,3 +19,7 @@ position = Vector2( 75, 192 )
 __meta__ = {
 "_edit_group_": true
 }
+
+[node name="TileMap" type="TileMap" parent="."]
+position = Vector2( 75, 192 )
+format = 1

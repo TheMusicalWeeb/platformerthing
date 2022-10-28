@@ -125,7 +125,7 @@ position = Vector2( 609.483, -9.60993 )
 scale = Vector2( 1, 0.362999 )
 
 [node name="Eagle" parent="." instance=ExtResource( 7 )]
-position = Vector2( 277, 196 )
+position = Vector2( 277, 188 )
 
 [node name="Opossum" parent="." instance=ExtResource( 8 )]
 position = Vector2( 762, 213 )
