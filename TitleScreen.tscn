@@ -98,9 +98,11 @@ flat = true
 modulate = Color( 1, 1, 1, 0 )
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/FadeOut = SubResource( 1 )
 anims/RESET = SubResource( 2 )
 
 [connection signal="pressed" from="TitleScreen/START" to="." method="_on_START_pressed"]
+[connection signal="pressed" from="TitleScreen/QUIT" to="." method="_on_QUIT_pressed"]

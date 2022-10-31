@@ -14,9 +14,14 @@ func fadeout():
 	$AnimationPlayer.play("FadeOut")
 	yield($AnimationPlayer,"animation_finished")
 
-
+func start_game():
+	get_tree().change_scene("res://Level1.tscn")
 	
 func _on_START_pressed():
 	fadeout()
-	get_tree().change_scene("res://Level1.tscn")
+	#get_tree().change_scene("res://Level1.tscn")
 	
+
+
+func _on_QUIT_pressed():
+	get_tree().quit()
